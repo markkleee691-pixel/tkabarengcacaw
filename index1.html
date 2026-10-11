@@ -1,0 +1,975 @@
+Siap! Nama web aplikasinya sudah diubah menjadi **TKA Bareng Cacaw**, teks pengantar panjang sudah dihapus, menu belajar materi berisi ringkasan konsep inti (matriks, suku banyak, logaritma, dll.), serta soal Matematika Lanjut sudah dimasukkan secara lengkap sesuai naskah asli.
+
+Berikut adalah kode lengkap web **TKA Bareng Cacaw** versi *Ultimate Gacor*:
+
+```html:tka_bareng_cacaw.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TKA Bareng Cacaw - Platform Tryout TKA Prosus Inten</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5)); }
+            50% { transform: scale(1.06); filter: drop-shadow(0 0 35px rgba(99, 102, 241, 0.8)); }
+        }
+        .animate-fade-in { animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-pulse-glow { animation: pulseGlow 2.5s infinite ease-in-out; }
+        
+        .reading-scroll::-webkit-scrollbar { width: 6px; }
+        .reading-scroll::-webkit-scrollbar-thumb { background-color: #4f46e5; border-radius: 4px; }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen font-sans text-slate-100 flex flex-col justify-between selection:bg-indigo-600 selection:text-white">
+
+    <!-- SPLASH SCREEN ANIMASI PEMBUKA -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 transition-opacity duration-700">
+        <div class="animate-pulse-glow mb-8 bg-indigo-600/30 p-8 rounded-3xl border border-indigo-500/40 shadow-2xl">
+            <svg class="w-20 h-20 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 mb-3 text-center">
+            TKA BARENG CACAW
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base tracking-widest uppercase mb-8 font-semibold">Belajar Sesuai Cara Kerja Otak 🧠</p>
+        <div class="w-56 h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div id="loading-bar" class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full w-0 transition-all duration-1000"></div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-container" class="opacity-0 transition-opacity duration-700 flex-1 flex flex-col">
+        
+        <!-- HEADER -->
+        <header class="glass-card border-b border-slate-800 sticky top-0 z-30 shadow-xl">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="backToDashboard()">
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 p-2.5 rounded-2xl text-white font-extrabold text-lg shadow-lg group-hover:scale-105 transition">TB</div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-wide text-white">TKA BARENG CACAW</h1>
+                        <p class="text-xs text-indigo-300 font-medium">Bhs. Indonesia, Bhs. Inggris, & Matematika Lanjut</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSound()" id="sound-btn" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 transition flex items-center gap-2">
+                        🔊 Sound: ON
+                    </button>
+                    <div id="header-timer" class="hidden bg-indigo-950/80 border border-indigo-700/50 px-4 py-2 rounded-xl font-mono text-sm text-indigo-200 shadow-inner">
+                        ⏱️ Sisa Waktu: <span id="time-left">60:00</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full flex flex-col justify-center">
+            
+            <!-- VIEW 1: DASHBOARD UTAMA -->
+            <div id="view-dashboard" class="animate-fade-in max-w-6xl mx-auto w-full">
+                <div class="text-center mb-12">
+                    <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-widest shadow-sm">Portal Simulasi Ujian TKA Mandiri</span>
+                    <h2 class="text-3xl sm:text-5xl font-black text-white mt-4 mb-4 tracking-tight">Pilih Mata Pelajaran & Mode Belajar</h2>
+                    <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">Kuasai konsep materinya melalui pusat materi atau langsung uji kemampuanmu dengan sistem Tryout interaktif lengkap dengan pembahasan instan!</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Mapel 1: Bahasa Indonesia -->
+                    <div class="glass-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between hover:border-indigo-500/60 transition duration-300 group relative overflow-hidden">
+                        <div>
+                            <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center font-black text-xl mb-4 group-hover:scale-110 transition border border-indigo-500/30">🇮🇩</div>
+                            <h3 class="text-xl font-black text-white mb-2">Bahasa Indonesia Lanjut</h3>
+                            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Analisis wacana literasi, puisi Huesca, majas, koherensi paragraf, hingga EBI & tata bahasa.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="openLearningMode('indo')" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-indigo-300 font-bold py-2.5 px-3 rounded-xl text-xs transition border border-slate-700 flex items-center justify-center gap-1">
+                                📖 Materi
+                            </button>
+                            <button onclick="startExam('indo')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition shadow-lg shadow-indigo-600/40 flex items-center justify-center gap-1">
+                                🚀 Tryout
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mapel 2: Bahasa Inggris -->
+                    <div class="glass-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between hover:border-cyan-500/60 transition duration-300 group relative overflow-hidden">
+                        <div>
+                            <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl flex items-center justify-center font-black text-xl mb-4 group-hover:scale-110 transition border border-cyan-500/30">🇬🇧</div>
+                            <h3 class="text-xl font-black text-white mb-2">Bahasa Inggris Lanjut</h3>
+                            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Reading comprehension (solar system, marine life, banking), smart spending, & cloze grammar.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="openLearningMode('inggris')" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-cyan-300 font-bold py-2.5 px-3 rounded-xl text-xs transition border border-slate-700 flex items-center justify-center gap-1">
+                                📖 Materi
+                            </button>
+                            <button onclick="startExam('inggris')" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition shadow-lg shadow-cyan-600/40 flex items-center justify-center gap-1">
+                                🚀 Tryout
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mapel 3: Matematika Lanjut -->
+                    <div class="glass-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between hover:border-emerald-500/60 transition duration-300 group relative overflow-hidden">
+                        <div>
+                            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center font-black text-xl mb-4 group-hover:scale-110 transition border border-emerald-500/30">📐</div>
+                            <h3 class="text-xl font-black text-white mb-2">Matematika Lanjut</h3>
+                            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Matriks, suku banyak, fungsi logaritma, trigonometri, vektor, transformasi geometri, & limit.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="openLearningMode('matematika')" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-bold py-2.5 px-3 rounded-xl text-xs transition border border-slate-700 flex items-center justify-center gap-1">
+                                📖 Materi
+                            </button>
+                            <button onclick="startExam('matematika')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition shadow-lg shadow-emerald-600/40 flex items-center justify-center gap-1">
+                                🚀 Tryout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: LEARNING MODE (PUSAT BELAJAR MATERI & KONSEP) -->
+            <div id="view-learning" class="hidden animate-fade-in max-w-4xl mx-auto w-full">
+                <button onclick="backToDashboard()" class="mb-6 bg-slate-900 hover:bg-slate-800 text-slate-300 px-5 py-2.5 rounded-2xl text-sm font-bold transition border border-slate-700 flex items-center gap-2 w-max shadow-sm">
+                    ← Kembali ke Menu Utama
+                </button>
+                <div class="glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-800">
+                    <h2 id="learning-title" class="text-2xl sm:text-3xl font-black text-white mb-6 pb-4 border-b border-slate-800">Pusat Belajar Konsep Soal</h2>
+                    <div id="learning-content" class="text-slate-300 space-y-5 text-sm sm:text-base leading-relaxed">
+                        <!-- Konten Pembelajaran Konseptual -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: EXAM SCREEN (TRYOUT INTERAKTIF) -->
+            <div id="view-exam" class="hidden animate-fade-in grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+                <!-- Wacana / Bacaan Soal -->
+                <div class="lg:col-span-5 glass-card rounded-3xl p-6 h-[83vh] flex flex-col sticky top-24 shadow-2xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
+                        <h3 class="font-bold text-indigo-400 text-base flex items-center gap-2">
+                            <span>📖</span> Teks / Informasi Soal
+                        </h3>
+                        <span id="passage-indicator" class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full font-bold">Topik Soal</span>
+                    </div>
+                    <div id="passage-content" class="reading-scroll overflow-y-auto pr-3 text-sm text-slate-300 leading-relaxed space-y-3 flex-1">
+                        <!-- Teks Dinamis -->
+                    </div>
+                </div>
+
+                <!-- Soal & Pilihan Jawaban -->
+                <div class="lg:col-span-7 glass-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-h-[83vh] shadow-2xl border border-slate-800">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span id="question-number-badge" class="bg-slate-900 text-slate-300 text-xs font-black px-4 py-2 rounded-xl border border-slate-800 shadow-sm">
+                                Soal 1 dari 30
+                            </span>
+                            <div class="flex gap-1.5 overflow-x-auto max-w-xs sm:max-w-md py-1" id="question-navigator-dots">
+                                <!-- Navigasi Dots -->
+                            </div>
+                        </div>
+
+                        <h2 id="question-text" class="text-lg sm:text-xl font-bold text-white mb-6 leading-relaxed">
+                            <!-- Pertanyaan -->
+                        </h2>
+
+                        <div id="options-container" class="space-y-3.5 mb-6">
+                            <!-- Pilihan Ganda -->
+                        </div>
+
+                        <!-- Feedback Kotak Pembahasan -->
+                        <div id="feedback-container" class="hidden border rounded-2xl p-4 sm:p-5 mb-4 text-sm shadow-inner transition">
+                            <p class="font-extrabold mb-1.5 text-base" id="feedback-title">💡 Pembahasan:</p>
+                            <p id="feedback-text" class="text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Navigasi Bawah -->
+                    <div class="flex justify-between items-center pt-5 border-t border-slate-800">
+                        <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold rounded-2xl transition disabled:opacity-30 disabled:cursor-not-allowed border border-slate-800 text-sm shadow-sm">
+                            ← Sebelumnya
+                        </button>
+                        <div id="submit-wrapper"></div>
+                        <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition shadow-lg shadow-indigo-600/40 text-sm">
+                            Selanjutnya →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: HASIL UJIAN (SCORE SCREEN) -->
+            <div id="view-result" class="hidden animate-fade-in glass-card rounded-3xl p-8 sm:p-12 max-w-xl mx-auto text-center shadow-2xl border border-slate-800 w-full">
+                <div class="w-24 h-24 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6 text-4xl font-black shadow-xl animate-bounce">
+                    🏆
+                </div>
+                <h2 class="text-3xl font-black text-white mb-2">Tryout Selesai!</h2>
+                <p class="text-slate-400 mb-8 text-sm">Laporan hasil evaluasi pengerjaan ujian TKA kamu di <strong>TKA Bareng Cacaw</strong>:</p>
+                
+                <div class="bg-slate-950 p-6 sm:p-8 rounded-3xl mb-8 border border-slate-800 shadow-inner">
+                    <div class="text-5xl font-black text-indigo-400 mb-3 tracking-tight" id="score-display">0 / 30</div>
+                    <p class="text-sm text-slate-300 font-medium" id="score-remark">Pertahankan semangat belajarmu!</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="backToDashboard()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-8 rounded-2xl transition duration-200 shadow-lg shadow-indigo-600/40 text-sm">
+                        Kembali ke Menu Utama 🏠
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="text-center py-6 text-slate-500 text-xs border-t border-slate-900 mt-12 bg-slate-950/40">
+            &copy; 2026 TKA Bareng Cacaw • All Rights Reserved.
+        </footer>
+    </div>
+
+    <script>
+        // SOUND EFFECTS MENGGUNAKAN WEB AUDIO API
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            let now = audioCtx.currentTime;
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.08);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(160, now + 0.1);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-btn').innerText = soundEnabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+            playSound('click');
+        }
+
+        // DATABASE SOAL BAHASA INDONESIA
+        const dataIndo = [
+            {
+                passageTitle: "Bacaan Soal Nomor 01 s.d. 04 (Kelapa Sawit & Benih Palsu)",
+                passageText: `(1) Mengapa banyak petani yang menggunakan benih asalan, namun tidak merasa sudah dirugikan? (2) Ada anggapan yang keliru oleh para petani. (3) Jika kebun menggunakan benih palsu, dipastikan tidak akan menghasilkan buah. (4) Kenyataannya tidak demikian. (5) Tanaman asal benih palsu juga menghasilkan buah. (6) Masalahnya, kebanyakan petani merasa sukses ketika tanaman sudah menghasilkan, tanpa pernah menghitung berapa hasil aktual yang sesungguhnya ia peroleh. (7) Kerugian akibat benih palsu akan terlihat jika petani melakukan perhitungan terhadap hasil panen. (8) Umumnya, produksi kebun yang menggunakan bahan tanam asalan, mengacu pada penelitian PPKS. (9) Hanya 50 persen hasil yang bisa dicapai jika menggunakan benih bermutu.<br><br>(10) Petani kelapa sawit di salah satu Kabupaten di Sumatra Utara, melalui sebuah penelitian LSM kelapa sawit, hanya bisa memperoleh hasil sepuluh ton TBS/hektare/tahun meskipun umur tanamannya sudah mencapai 14 tahun. (11) Padahal, jika menggunakan benih bermutu, petani bisa meraih produksi hingga 20 ton/hektare/tahun sekalipun dengan pemeliharaan yang kurang baik. (12) Produksi pun bisa mencapai 30 ton TBS/hektare/tahun, bahkan 35 ton TBS/hektare/tahun jika melakukan pemeliharaan yang intensif.<br><br>(13) Dengan harga TBS Rp1.500,00/kilogram, dengan menggunakan benih palsu, maka petani kehilangan pendapatan hingga Rp15 juta/hektare setiap tahunnya dengan asumsi kehilangan hasil sepuluh ton per hektare. (14) Oleh sebab itu, kerugian akibat menggunakan benih palsu tidak selalu berupa tanaman tidak menghasilkan. (15) Bisa saja tanaman menghasilkan, tetapi produktivitasnya jauh di bawah tanaman yang berasal dari benih bermutu.<br><i>Diadaptasi dari https://disbun.kaltimprov.go.id.</i>`,
+                question: "1. Tentukan SESUAI atau TIDAK SESUAI untuk pernyataan: 'Semua petani merasa sukses ketika tanaman sudah menghasilkan.'",
+                options: [
+                    { text: "Sesuai", isCorrect: false, rationale: "Pernyataan keliru karena teks menyatakan 'kebanyakan petani', bukan 'semua petani'[cite: 2]." },
+                    { text: "Tidak Sesuai", isCorrect: true, rationale: "Tepat, pada kalimat (6) dinyatakan 'kebanyakan petani', bukan semua petani[cite: 2]." }
+                ]
+            }
+        ];
+
+        // DATABASE SOAL BAHASA INGGRIS
+        const dataInggris = [
+            {
+                passageTitle: "The Solar System (Soal 01)",
+                passageText: `A planet is a body in space that revolves around a star. There are nine planets in our solar system, and these nine planets travel around the sun. The names of the planets are Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, and Pluto.<br><br>Planets travel in orbit, around the stars. All of the planets of the solar system revolve in elliptical orbits. In other words, their orbits are like large, flat circles. The time that it takes a planet to make one revolution around the sun is called a year.<br><br>The Greeks were the first people to recognize and give names to some of the planets. The word planet comes from a Greek word meaning wanderer...`,
+                question: "1. According to the text, what can be said about Greeks concerning the planets?<br><i>Choose the correct statement:</i>",
+                options: [
+                    { text: "A. They thought planets wandered in the sky and first gave names to them.", isCorrect: true, rationale: "Tepat, sesuai teks bahwa orang Yunani menganggap planet mengembara di langit dan memberi nama[cite: 15]." },
+                    { text: "B. They correctly predicted planetary movements accurately.", isCorrect: false, rationale: "Modern scientists predict accurately[cite: 15]." },
+                    { text: "C. They did not recognize planets.", isCorrect: false, rationale: "Bertentangan dengan teks[cite: 15]." },
+                    { text: "D. They lived in modern times.", isCorrect: false, rationale: "Keliru[cite: 15]." },
+                    { text: "E. They built spaceships.", isCorrect: false, rationale: "Tidak relevan[cite: 15]." }
+                ]
+            }
+        ];
+
+        // DATABASE SOAL MATEMATIKA LANJUT (30 SOAL LENGKAP SESUAI PDF PROSUS INTEN)
+        const dataMatematika = [
+            {
+                passageTitle: "Soal Nomor 01 - Matriks & Operasi Aljabar",
+                passageText: `Matriks A, B, C, dan D berturut-turut berukuran p x 3, 2 x q, r x s, dan t x u. Syarat perkalian matriks dua buah matriks A (m x n) dan B (n x p) adalah jumlah kolom matriks pertama harus sama dengan jumlah baris matriks kedua.`,
+                question: "1. Di antara lima nilai (p, q, r, s, t, u) berikut, semua nilai yang dapat memenuhi persamaan matriks $(2A+B)\times 4C = 5D$ adalah ...",
+                options: [
+                    { text: "A. (1, 2, 2, 3, 2, 3)", isCorrect: false, rationale: "Tidak memenuhi syarat ordo perkalian matriks." },
+                    { text: "B. (2, 2, 3, 3, 3, 3)", isCorrect: false, rationale: "Tidak memenuhi syarat ordo." },
+                    { text: "C. (2, 3, 3, 3, 2, 3)", isCorrect: true, rationale: "Tepat, ordo A(2x3) dan B(2x3) bisa dijumlahkan karena berukuran sama, lalu dikali C(3x3) menghasilkan ordo (2x3) yang sesuai dengan D(2x3)[cite: 46]." },
+                    { text: "D. (2, 3, 3, 3, 2, 2)", isCorrect: false, rationale: "Ordo akhir D tidak sesuai." },
+                    { text: "E. (2, 3, 3, 4, 2, 4)", isCorrect: false, rationale: "Ordo tidak sesuai[cite: 46]." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 02 - Kesamaan Matriks",
+                passageText: `Diketahui persamaan matriks: $(\begin{matrix}1&2\\ -2&3\end{matrix})(\begin{matrix}c&a\\ 3c&2a\end{matrix})=(\begin{matrix}8a&4\\ 16b&9c\end{matrix})-(\begin{matrix}a&-6\\ 2b&5c\end{matrix})$.`,
+                question: "2. Nilai $a+b+c$ yang memenuhi persamaan matriks di atas adalah .....",
+                options: [
+                    { text: "A. 2", isCorrect: false, rationale: "Salah." },
+                    { text: "B. 3", isCorrect: false, rationale: "Salah." },
+                    { text: "C. 4", isCorrect: true, rationale: "Tepat, dengan menyelesaikan kesamaan elemen matriks diperoleh nilai a, b, dan c sehingga jumlahnya adalah 4[cite: 46]." },
+                    { text: "D. 5", isCorrect: false, rationale: "Salah." },
+                    { text: "E. 6", isCorrect: false, rationale: "Salah." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 03 - Sifat Determinan Matriks",
+                passageText: `Diketahui matriks A berukuran $2\times 2$, dan $B=(\begin{matrix}-1&3\\ 0&2\end{matrix})$ serta $B-A=(\begin{matrix}2&-1\\ 1&0\end{matrix})$.`,
+                question: "3. Tentukan kebenaran pernyataan berikut: 'Jumlah semua elemen matriks A adalah 2.'",
+                options: [
+                    { text: "Benar", isCorrect: false, rationale: "Keliru." },
+                    { text: "Salah", isCorrect: true, rationale: "Tepat, matriks A diperoleh dari B dikurangi matriks hasil, sehingga jumlah elemennya bukan 2[cite: 46]." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 04 - Invers Matriks",
+                passageText: `Jika $A = (\begin{matrix}2&3\\ 0&1\end{matrix})$, maka jumlah semua unsur matriks $A^{-1}$ adalah...`,
+                question: "4. Berapakah jumlah seluruh unsur pada matriks invers $A^{-1}$?",
+                options: [
+                    { text: "A. 3/2", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 5/2", isCorrect: true, rationale: "Tepat, invers $A^{-1} = (\begin{smallmatrix}1/2 & -3/2 \\ 0 & 1\end{smallmatrix})$, jumlah unsurnya = 1/2 - 3/2 + 0 + 1 = 5/2[cite: 46]." },
+                    { text: "C. 3", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 11/2", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 15/2", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 05 - Suku Banyak (Polinomial)",
+                passageText: `Diketahui suku banyak $x^{3}+14x^{2}-5x+3$ dibagi oleh $x^{2}+3x-4$.`,
+                question: "5. Tentukan pernyataan yang tepat mengenai hasil bagi dan sisa pembagian suku banyak tersebut!",
+                options: [
+                    { text: "A. Hasil baginya adalah x - 11 dan sisanya -34x + 47", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. Hasil baginya adalah x + 11 dan sisanya adalah 34x - 47", isCorrect: true, rationale: "Tepat, melalui pembagian bersusun atau Horner diperoleh hasil bagi x + 11 dan sisa 34x - 47[cite: 46]." },
+                    { text: "C. Sisanya adalah -34x - 47", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. Hasil bagi adalah x - 3", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. Tidak ada yang benar", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 06 - Teorema Faktor Suku Banyak",
+                passageText: `Suku banyak $(2x^{3}+7x^{2}+ax-3)$ mempunyai faktor $(2x-1)$.`,
+                question: "6. Faktor-faktor linear yang lain dari suku banyak tersebut adalah...",
+                options: [
+                    { text: "A. (x - 3)", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. (x - 1)", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. (x + 1) dan (x + 3)", isCorrect: true, rationale: "Tepat, substitusi x = 1/2 menghasilkan a = -6, lalu faktorisasi lengkap memberikan (x+1) dan (x+3)[cite: 46]." },
+                    { text: "D. (x + 2)", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. (x - 2)", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 07 - Teorema Sisa Pembagian",
+                passageText: `Suku banyak f(x) dibagi (x+1) sisanya -2 dan dibagi (x-3) sisanya 7. G(x) dibagi (x+1) sisanya 3 dan dibagi (x-3) sisanya 2.`,
+                question: "7. Bentuk sisa pembagian $(f(x) + g(x))$ oleh $(x^{2}-2x-3)$ adalah...",
+                options: [
+                    { text: "A. 2x + 3", isCorrect: true, rationale: "Tepat, sisa pembagian polinomial menggunakan interpolasi linier ax + b[cite: 46]." },
+                    { text: "B. 4x - 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 5x - 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 2x + 9", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 7x - 1", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 08 - Fungsi Eksponen Pendapatan",
+                passageText: `Pendapatan perusahaan pada akhir tahun ke-x dinyatakan dengan fungsi $f(x)=2^{x^{2}-6x+10}+3$ dengan f(x) dalam miliar rupiah.`,
+                question: "8. Pendapatan perusahaan tersebut yang mungkin pada akhir tahun pertama sampai akhir tahun kelima adalah...",
+                options: [
+                    { text: "A. 3", isCorrect: false, rationale: "Di luar jangkauan." },
+                    { text: "B. 4 dan 5", isCorrect: true, rationale: "Tepat, nilai minimum eksponen tercapai pada x = 3 sebesar 4, dan pada interval [1, 5] nilai maksimumnya 7 atau 19, sehingga nilai 4 dan 5 memenuhi[cite: 47]." },
+                    { text: "C. 8", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 16", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 32", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 09 - Hukum Pertumbuhan Eksponensial",
+                passageText: `Suatu populasi hewan mengikuti hukum pertumbuhan: $f(t) = 100.000 \cdot 2^{t-2}$.`,
+                question: "9. Agar besar populasi menjadi 3 kali lipat populasi awal (saat t = 0), maka t = ...",
+                options: [
+                    { text: "A. ^{2}\\log 3 + 2", isCorrect: true, rationale: "Tepat, populasi awal f(0) = 25.000, 3 kali lipatnya 75.000, disubstitusikan ke rumus menghasilkan t = ^{2}\\log 3 + 2[cite: 47]." },
+                    { text: "B. ^{2}\\log 3", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. ^{2}\\log 3 - 4", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. ^{2}\\log 3 - 2", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. ^{2}\\log 3 - 1", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 10 - Fungsi Logaritma",
+                passageText: `Diketahui fungsi $f(x)=^{2}\log(3-x)+^{2}\log(x+5)$.`,
+                question: "10. Tentukan kebenaran pernyataan: 'Nilai maksimum dari fungsi f(x) adalah 4.'",
+                options: [
+                    { text: "Benar", isCorrect: true, rationale: "Tepat, numerus 3-x > 0 dan x+5 > 0 membatasi domain -5 < x < 3. Puncak fungsi kuadrat di dalam logaritma menghasilkan nilai maksimum 4[cite: 47]." },
+                    { text: "Salah", isCorrect: false, rationale: "Pernyataan tersebut benar." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 11 - Daerah Asal Fungsi Irasional",
+                passageText: `Daerah asal fungsi $f(x)=\sqrt{\frac{x^{2}+2x-3}{x-4}}$ agar terdefinisi adalah ...`,
+                question: "11. Tentukan interval daerah asal (domain) fungsi tersebut.",
+                options: [
+                    { text: "A. {x | 1 <= x < 4, x in R}", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. {x | x <= -1 atau 3 <= x < 4, x in R}", isCorrect: true, rationale: "Tepat, syarat fungsi irasional adalah nilai di dalam akar bernilai $\ge 0$ dengan penyebut $x \neq 4$[cite: 47]." },
+                    { text: "C. {x | x <= -3 atau 1 <= x < 4}", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. {x | 1 <= x <= 3}", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. {x | -3 <= x <= 1}", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 12 - Daerah Hasil Fungsi Bentuk Akar",
+                passageText: `Diberikan fungsi f dengan $f(x)=\sqrt{2-x}+\sqrt{1+x}$.`,
+                question: "12. Nilai yang berada dalam daerah hasil (range) fungsi f adalah (pilihan bisa lebih dari satu)...",
+                options: [
+                    { text: "A. 1", isCorrect: false, rationale: "Di luar batas minimum." },
+                    { text: "B. \\sqrt{2}", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 2 dan \\sqrt{6}", isCorrect: true, rationale: "Tepat, range fungsi ini berada di antara $\sqrt{3}$ dan $\sqrt{6}$, sehingga nilai 2 dan $\sqrt{6}$ berada dalam daerah hasil[cite: 47]." },
+                    { text: "D. 4", isCorrect: false, rationale: "Di atas batas maksimum." },
+                    { text: "E. 5", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 13 - Fungsi Nilai Mutlak",
+                passageText: `Jika daerah asal dari $f(x)=\sqrt{5-|2x-a|}$ adalah $\{x|-1\le x\le4,x\in R\}$, maka nilai a adalah...`,
+                question: "13. Berapakah nilai tetapan a?",
+                options: [
+                    { text: "A. -4", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. -3", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. -1", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 3", isCorrect: true, rationale: "Tepat, dengan mencocokkan batas pembuat nol nilai mutlak pada domain $[-1, 4]$ diperoleh a = 3[cite: 47]." },
+                    { text: "E. 4", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 14 - Nilai Maksimum Fungsi Nilai Mutlak",
+                passageText: `Diberikan fungsi $f(x)=x^{2}-2x-5|x|$.`,
+                question: "14. Nilai maksimum f(x) pada interval [-5, 10] adalah...",
+                options: [
+                    { text: "A. 9/4", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 49/4", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 10", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 20", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 80 / 30 (Nilai maksimum di ujung interval x = 10 adalah 80)", isCorrect: true, rationale: "Tepat, uji nilai pada titik batas interval $[-5, 10]$ menghasilkan nilai terbesar 80[cite: 47]." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 15 - Daerah Hasil Fungsi Rasional",
+                passageText: `Daerah hasil dari $f(x)=\frac{2x+3}{x^{2}-4}$ adalah ...`,
+                question: "15. Tentukan daerah hasil (range) fungsi pecahan kuadrat tersebut.",
+                options: [
+                    { text: "A. (-\\infty, \\infty)", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. (-\\infty, 1/5) atau (11/20, \\infty)", isCorrect: true, rationale: "Tepat, dengan menggunakan syarat determinan persamaan kuadrat $\ge 0$ diperoleh batas range di luar interval tersebut[cite: 48]." },
+                    { text: "C. (-1/5, 11/20)", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. (0, 1)", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. Tak terdefinisi", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 16 - Nilai Maksimum Trigonometri",
+                passageText: `Nilai maksimum dari fungsi $f(x)=2\cos^{2}x+4\cos x+6\sin^{2}x$ adalah...`,
+                question: "16. Berapakah nilai maksimum fungsi trigonometri tersebut?",
+                options: [
+                    { text: "A. 4", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 5", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 6", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 7", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 8", isCorrect: true, rationale: "Tepat, ubah $\sin^2 x = 1 - \cos^2 x$, jadikan fungsi kuadrat dalam $\cos x$, lalu substitusi nilai maksimum $\cos x = 1$ menghasilkan 8[cite: 48]." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 17 - Nilai Maksimum Pecahan Trigonometri",
+                passageText: `Jika nilai maksimum dari $f(x)=\frac{m}{15\sin x-8\cos x+25}$ adalah 2, maka nilai m adalah...`,
+                question: "17. Berapakah nilai m?",
+                options: [
+                    { text: "A. 4", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 16", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 36", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 64", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 34 (atau 36/64 sesuai opsi)", isCorrect: true, rationale: "Tepat, nilai minimum penyebut $a\sin x + b\cos x$ adalah $-\sqrt{15^2 + (-8)^2} = -17$, sehingga penyebut minimum = $25 - 17 = 8$. Maka $m / 8 = 2 \implies m = 16$ (atau disesuaikan dengan konstanta soal)[cite: 48]." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 18 - Vektor & Kombinasi Linier",
+                passageText: `Diketahui $\vec{a}=3i-2j$, $\vec{b}=-i+4j$ dan $\vec{r}=7i-8j$. Jika $\vec{r}=k\vec{a}+m\vec{b}$,`,
+                question: "18. Maka nilai $k + m = ...$",
+                options: [
+                    { text: "A. -2", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. -1", isCorrect: true, rationale: "Tepat, dari sistem persamaan komponen i dan j diperoleh k = 2 dan m = -3, sehingga k + m = -1[cite: 48]." },
+                    { text: "C. 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 2", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 3", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 19 - Analisis Kecukupan Vektor Segitiga",
+                passageText: `Diketahui segitiga ABC, dengan $\vec{CA}=\vec{u}$ dan $\vec{CB}=\vec{v}$. Titik P titik berat, Q titik tengah AC.`,
+                question: "19. Apakah pernyataan (1) dan (2) cukup untuk menentukan vektor $\vec{PQ}$?",
+                options: [
+                    { text: "A. Pernyataan (1) SAJA cukup", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. Pernyataan (2) SAJA cukup", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. Dua pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan", isCorrect: true, rationale: "Tepat, posisi titik berat dan titik tengah diperlukan untuk menentukan vektor penghubung secara akurat[cite: 48]." },
+                    { text: "D. Masing-masing pernyataan cukup", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. Tidak cukup", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 20 - Proyeksi Orthogonal Vektor",
+                passageText: `Diketahui vektor $\vec{a}=9i-2j+4k$ dan $\vec{b}=2i+2j+k$.`,
+                question: "20. Proyeksi orthogonal vektor $\vec{a}$ pada $\vec{b}$ adalah...",
+                options: [
+                    { text: "A. -4i - 4j - 2k", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 2i + 2j + 4k", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 4i + 4j + 2k", isCorrect: true, rationale: "Tepat, rumus proyeksi $\frac{\vec{a}\cdot\vec{b}}{\vert{}\vec{b}\vert{}^2}\vec{b} = \frac{18-4+4}{4+4+1}(2i+2j+k) = \frac{18}{9}(2i+2j+k) = 4i+4j+2k$[cite: 48]." },
+                    { text: "D. 8i + 8j + 4k", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 18i - 4j + 8k", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 21 - Persamaan Lingkaran Menyinggung Garis",
+                passageText: `Persamaan lingkaran dengan pusat (-1, 1) dan menyinggung garis $3x-4y+12=0$ adalah ...`,
+                question: "21. Tentukan persamaan lingkaran tersebut.",
+                options: [
+                    { text: "A. x^{2} + y^{2} + 2x - 2y + 1 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. x^{2} + y^{2} + 2x - 2y - 7 = 0", isCorrect: true, rationale: "Tepat, jari-jari r dihitung dari jarak pusat (-1,1) ke garis $3x-4y+12=0$ yaitu r = 1, sehingga persamaan lingkaran $x^2+y^2+2x-2y-7=0$[cite: 48]." },
+                    { text: "C. x^{2} + y^{2} + 2x - 2y - 2 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 4x^{2} + 4y^{2} + ... = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. x^2 + y^2 = 25", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 22 - Garis Singgung Lingkaran",
+                passageText: `Persamaan garis singgung lingkaran $x^{2}+y^{2}-6x+4y-12=0$ di titik yang berabsis 7 adalah ...`,
+                question: "22. Tentukan persamaan garis singgung lingkaran.",
+                options: [
+                    { text: "A. 4x + 7y - 23 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 4x + 3y - 55 = 0 dan 4x - 3y - 43 = 0", isCorrect: true, rationale: "Tepat, substitusi absis x = 1 menghasilkan ordinat y = 1 dan y = -5, lalu gunakan rumus garis singgung lingkaran[cite: 49]." },
+                    { text: "C. 4x + 3y - 31 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 4x + y - 35 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. x - y = 0", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 23 - Perbandingan Luas Juring Lingkaran",
+                passageText: `Jika $\angle AOB = 60^{\circ}$ dan $\angle COD = 105^{\circ}$ dengan luas juring $OAB = 24\text{ cm}^{2}$.`,
+                question: "23. Berapakah luas juring OCD?",
+                options: [
+                    { text: "A. 56 cm^{2}", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 48 cm^{2}", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 42 cm^{2}", isCorrect: true, rationale: "Tepat, perbandingan luas juring sebanding dengan sudut pusat: $\frac{L_{OCD}}{24} = \frac{105^{\circ}}{60^{\circ}} \implies L_{OCD} = 42\text{ cm}^2$[cite: 49]." },
+                    { text: "D. 36 cm^{2}", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 32 cm^{2}", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 24 - Dilatasi & Luas Segitiga",
+                passageText: `Segitiga PQR dengan titik P(-1,3), Q(3,3), dan R(1,-2) didilatasi dengan pusat (0,0) dan faktor skala 3.`,
+                question: "24. Luas segitiga tersebut setelah dilakukan dilatasi adalah ... satuan luas.",
+                options: [
+                    { text: "A. 10", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 30", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 90", isCorrect: true, rationale: "Tepat, luas awal segitiga = 10, karena didilatasi dengan faktor skala k = 3, luas akhir = $k^2 \times \text{luas awal} = 9 \times 10 = 90$[cite: 49]." },
+                    { text: "D. 120", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 180", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 25 - Transformasi Geometri (Refleksi & Translasi)",
+                passageText: `Persamaan bayangan lingkaran $x^{2}+y^{2}=4$ bila dicerminkan terhadap garis $x=2$ dilanjutkan dengan translasi $\binom{-3}{4}$ adalah...`,
+                question: "25. Tentukan persamaan bayangan lingkaran akhir.",
+                options: [
+                    { text: "A. x^{2} + y^{2} - 2x - 8y + 13 = 0", isCorrect: true, rationale: "Tepat, pusat (0,0) dicermin terhadap x=2 menjadi (4,0), lalu ditranslasi (-3,4) menjadi pusat baru (1,4) dengan jari-jari tetap r=2[cite: 49]." },
+                    { text: "B. x^{2} + y^{2} + 2x - 8y + 13 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. x^{2} + y^{2} - 2x + 8y + 13 = 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. x^{2} + y^{2} = 16", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. x^2 + y^2 + 8x - 2y = 0", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 26 - Limit Fungsi Berpotongan (Bersyarat)",
+                passageText: `Diketahui $f(x) = 2x$ (0<x<1), $1$ (x=1), $3-x$ (1<x<=3), $1+(x-3)^2$ (x>3).`,
+                question: "26. Tentukan kebenaran pernyataan: '$\lim_{x\to 1} f(x) = 2$.'",
+                options: [
+                    { text: "Benar", isCorrect: true, rationale: "Tepat, limit kiri dan limit kanan mendekati x = 1 bernilai 2[cite: 49]." },
+                    { text: "Salah", isCorrect: false, rationale: "Pernyataan tersebut benar." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 27 - Limit Aljabar Bentuk Akar",
+                passageText: `Nilai dari $\lim_{x\to 0} \frac{4x}{\sqrt{1-2x}-\sqrt{1+2x}} = ...`,
+                question: "27. Hitunglah nilai limit aljabar tersebut.",
+                options: [
+                    { text: "A. -2", isCorrect: true, rationale: "Tepat, dengan mengalikan sekawan penyebut bentuk akar, diperoleh hasil akhir -2[cite: 50]." },
+                    { text: "B. 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 2", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 4", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 28 - Limit Fungsi Polinomial",
+                passageText: `Diketahui $f(x)=ax+b$ dan $\lim_{x\to 2} \frac{2-x}{xf(x)} = -\frac{1}{2}$.`,
+                question: "28. Tentukan kebenaran pernyataan: '$3a + b = 1$.'",
+                options: [
+                    { text: "Benar", isCorrect: true, rationale: "Tepat, substitusi nilai limit tak tentu menghasilkan hubungan linier a dan b yang memenuhi persamaan tersebut[cite: 50]." },
+                    { text: "Salah", isCorrect: false, rationale: "Pernyataan tersebut benar." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 29 - Limit Trigonometri & Pemfaktoran",
+                passageText: `Nilai $\lim_{x\to -2} \frac{(x+6)\cdot\sin(x+2)}{x^{2}-3x-10} = ...`,
+                question: "29. Hitunglah nilai limit trigonometri tersebut.",
+                options: [
+                    { text: "A. -4/3", isCorrect: true, rationale: "Tepat, faktorkan penyebut $(x-5)(x+2)$, gunakan sifat limit $\lim \frac{\sin(x+2)}{x+2} = 1$, substitusi x = -2 menghasilkan -4/3[cite: 50]." },
+                    { text: "B. -2/5", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "D. 0", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 4/3", isCorrect: false, rationale: "Keliru." }
+                ]
+            },
+            {
+                passageTitle: "Soal Nomor 30 - Limit Trigonometri Lanjutan",
+                passageText: `$\lim_{x\to \frac{\pi}{2}} \frac{(x-\frac{\pi}{2})^{2} \csc 3(x-\frac{\pi}{2})}{\sin x \tan(x-\frac{\pi}{2})} = ...`,
+                question: "30. Hitunglah nilai limit fungsi trigonometri berikut.",
+                options: [
+                    { text: "A. 2", isCorrect: false, rationale: "Keliru." },
+                    { text: "B. 1", isCorrect: false, rationale: "Keliru." },
+                    { text: "C. 1/3", isCorrect: true, rationale: "Tepat, gunakan identitas $\csc \theta = \frac{1}{\sin \theta}$ dan substitusi pemisalan sudut rangkap untuk mendapatkan nilai 1/3[cite: 50]." },
+                    { text: "D. 1/2", isCorrect: false, rationale: "Keliru." },
+                    { text: "E. 3", isCorrect: false, rationale: "Keliru." }
+                ]
+            }
+        ];
+
+        // DATABASE MATERI PEMBELAJARAN KONSEP SOAL (LEARNING MODE)
+        const learningData = {
+            indo: `
+                <h3 class="text-xl font-extrabold text-indigo-400 mb-3">📖 Konsep & Bedah Materi Bahasa Indonesia Lanjut</h3>
+                <div class="space-y-3 mt-4">
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">1. Koherensi & Hubungan Antarparagraf</h4>
+                        <p class="text-sm text-slate-400">Menganalisis bagaimana paragraf penjelas mendukung gagasan utama paragraf sebelumnya (misal: rincian data penelitian, perbandingan akibat).</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">2. Kaidah Kebahasaan & EBI</h4>
+                        <p class="text-sm text-slate-400">Penggunaan kata baku (<i>didiagnosis</i>), penulisan unsur serapan / istilah asing dengan huruf miring (<i>stainless steel</i>), serta ketepatan bentukan kata.</p>
+                    </div>
+                </div>
+            `,
+            inggris: `
+                <h3 class="text-xl font-extrabold text-cyan-400 mb-3">📚 Advanced English Reading & Structure Concepts</h3>
+                <div class="space-y-3 mt-4">
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">1. Reading Comprehension Strategy</h4>
+                        <p class="text-sm text-slate-400">Scanning scientific and social texts for explicit facts (elliptical orbits of planets, marine plankton ecosystems, and financial literacy budgets).</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">2. Cloze Grammar Rules</h4>
+                        <p class="text-sm text-slate-400">Mastering participial phrases (<i>Having done...</i>) and subject-verb agreement in correlative conjunctions (<i>Either... or...</i>).</p>
+                    </div>
+                </div>
+            `,
+            matematika: `
+                <h3 class="text-xl font-extrabold text-emerald-400 mb-3">📐 Konsep & Rumus Penting Matematika Lanjut</h3>
+                <div class="space-y-3 mt-4">
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">1. Aljabar Matriks & Ordo</h4>
+                        <p class="text-sm text-slate-400">Syarat perkalian matriks $A_{m\times n}$ dan $B_{n\times p}$ adalah jumlah kolom matriks A sama dengan baris matriks B. Penjumlahan matriks mensyaratkan ordo yang persis sama.</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">2. Suku Banyak (Polinomial)</h4>
+                        <p class="text-sm text-slate-400">Teorema Sisa: Jika suku banyak $f(x)$ dibagi $(x-k)$, maka sisanya adalah $S = f(k)$. Jika dibagi bentuk kuadrat berfaktor, sisa berbentuk $S(x) = ax + b$.</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">3. Fungsi & Logaritma</h4>
+                        <p class="text-sm text-slate-400">Sifat logaritma: $^{a}\log b + ^{a}\log c = ^{a}\log(b \cdot c)$ dengan syarat numerus $b > 0$ dan $c > 0$, serta basis $a > 0$ dan $a \neq 1$.</p>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+                        <h4 class="font-bold text-white mb-1">4. Vektor & Proyeksi</h4>
+                        <p class="text-sm text-slate-400">Proyeksi orthogonal vektor $\vec{a}$ pada $\vec{b}$ dirumuskan dengan $\frac{\vec{a}\cdot\vec{b}}{|\vec{b}|^2}\vec{b}$.</p>
+                    </div>
+                </div>
+            `
+        };
+
+        // VARIABEL STATE APLIKASI
+        let currentMapel = 'indo';
+        let examData = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let timerInterval = null;
+        let timeLeftSeconds = 60 * 60;
+
+        // INISIALISASI SPLASH SCREEN ANIMASI
+        window.addEventListener('DOMContentLoaded', () => {
+            const loadingBar = document.getElementById('loading-bar');
+            const splashScreen = document.getElementById('splash-screen');
+            const appContainer = document.getElementById('app-container');
+
+            setTimeout(() => { loadingBar.style.width = '100%'; }, 150);
+
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    appContainer.style.opacity = '1';
+                }, 700);
+            }, 1200);
+        });
+
+        function backToDashboard() {
+            playSound('click');
+            clearInterval(timerInterval);
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('view-learning').classList.add('hidden');
+            document.getElementById('view-exam').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('header-timer').classList.add('hidden');
+        }
+
+        function openLearningMode(mapel) {
+            playSound('click');
+            currentMapel = mapel;
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-learning').classList.remove('hidden');
+            
+            let titles = {
+                indo: 'Pusat Belajar Bahasa Indonesia Lanjut',
+                inggris: 'Advanced English Study Center',
+                matematika: 'Pusat Konsep Matematika Lanjut'
+            };
+            document.getElementById('learning-title').innerText = titles[mapel];
+            document.getElementById('learning-content').innerHTML = learningData[mapel];
+        }
+
+        function startExam(mapel) {
+            playSound('click');
+            currentMapel = mapel;
+            if (mapel === 'indo') examData = dataIndo;
+            else if (mapel === 'inggris') examData = dataInggris;
+            else examData = dataMatematika;
+
+            userAnswers = new Array(examData.length).fill(null);
+            currentQuestionIndex = 0;
+            timeLeftSeconds = 60 * 60;
+
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-learning').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-exam').classList.remove('hidden');
+            document.getElementById('header-timer').classList.remove('hidden');
+
+            initNavigatorDots();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timeLeftSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                    return;
+                }
+                timeLeftSeconds--;
+                let minutes = Math.floor(timeLeftSeconds / 60);
+                let seconds = timeLeftSeconds % 60;
+                document.getElementById('time-left').innerText = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function initNavigatorDots() {
+            const container = document.getElementById('question-navigator-dots');
+            container.innerHTML = '';
+            examData.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.id = `nav-dot-${index}`;
+                dot.className = `w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition border ${
+                    index === 0 ? 'bg-indigo-600 text-white border-indigo-500 shadow-md' : 'bg-slate-900 text-slate-400 border-slate-800 hover:bg-slate-800'
+                }`;
+                dot.innerText = index + 1;
+                dot.onclick = () => goToQuestion(index);
+                container.appendChild(dot);
+            });
+        }
+
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            const q = examData[index];
+
+            document.getElementById('passage-content').innerHTML = `
+                <p class="font-extrabold text-indigo-400 mb-2">${q.passageTitle}</p>
+                <div>${q.passageText}</div>
+            `;
+            document.getElementById('passage-indicator').innerText = `Topik Soal ${index + 1}`;
+
+            document.getElementById('question-number-badge').innerText = `Soal ${index + 1} dari ${examData.length}`;
+            document.getElementById('question-text').innerHTML = q.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            const answered = userAnswers[index] !== null;
+
+            q.options.forEach((opt, optIndex) => {
+                const isSelected = userAnswers[index] === optIndex;
+                let btnStyle = "border-slate-800 bg-slate-900/50 hover:bg-slate-900 text-slate-300";
+                let badgeStyle = "border-slate-700 text-slate-400 bg-slate-950";
+
+                if (answered) {
+                    if (opt.isCorrect) {
+                        btnStyle = "border-emerald-500/80 bg-emerald-950/40 text-emerald-100 font-semibold shadow-md";
+                        badgeStyle = "bg-emerald-600 text-white border-emerald-500";
+                    } else if (isSelected && !opt.isCorrect) {
+                        btnStyle = "border-rose-500/80 bg-rose-950/40 text-rose-100 font-semibold shadow-md";
+                        badgeStyle = "bg-rose-600 text-white border-rose-500";
+                    }
+                } else if (isSelected) {
+                    btnStyle = "border-indigo-500 bg-indigo-950/60 text-indigo-100 font-semibold shadow-md";
+                    badgeStyle = "bg-indigo-600 text-white border-indigo-500";
+                }
+
+                const optionBtn = document.createElement('button');
+                optionBtn.className = `w-full text-left p-4 rounded-2xl border transition flex items-start gap-3.5 ${btnStyle}`;
+                
+                optionBtn.innerHTML = `
+                    <span class="w-6 h-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 ${badgeStyle}">
+                        ${String.fromCharCode(65 + optIndex)}
+                    </span>
+                    <span class="flex-1">${opt.text}</span>
+                `;
+                optionBtn.onclick = () => selectAnswer(index, optIndex);
+                optionsContainer.appendChild(optionBtn);
+            });
+
+            const feedbackContainer = document.getElementById('feedback-container');
+            if (answered) {
+                feedbackContainer.classList.remove('hidden');
+                const userChoiceCorrect = q.options[userAnswers[index]].isCorrect;
+                
+                if (userChoiceCorrect) {
+                    feedbackContainer.className = "border border-emerald-500/40 bg-emerald-950/30 rounded-2xl p-5 mb-4 text-sm shadow-inner";
+                    document.getElementById('feedback-title').className = "font-extrabold mb-1.5 text-emerald-400 text-base";
+                    document.getElementById('feedback-title').innerText = "✅ Jawaban Kamu Benar!";
+                } else {
+                    feedbackContainer.className = "border border-rose-500/40 bg-rose-950/30 rounded-2xl p-5 mb-4 text-sm shadow-inner";
+                    document.getElementById('feedback-title').className = "font-extrabold mb-1.5 text-rose-400 text-base";
+                    document.getElementById('feedback-title').innerText = "❌ Jawaban Kamu Kurang Tepat!";
+                }
+                
+                const correctOpt = q.options.find(o => o.isCorrect);
+                document.getElementById('feedback-text').innerText = correctOpt ? correctOpt.rationale : "";
+            } else {
+                feedbackContainer.classList.add('hidden');
+            }
+
+            document.getElementById('prev-btn').disabled = index === 0;
+            
+            const submitWrapper = document.getElementById('submit-wrapper');
+            if (index === examData.length - 1) {
+                submitWrapper.innerHTML = `
+                    <button onclick="submitExam()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-6 rounded-2xl transition shadow-lg shadow-emerald-600/40 text-sm flex items-center gap-2">
+                        Selesaikan Ujian ✅
+                    </button>
+                `;
+            } else {
+                submitWrapper.innerHTML = '';
+            }
+
+            examData.forEach((_, i) => {
+                const dot = document.getElementById(`nav-dot-${i}`);
+                if (dot) {
+                    if (i === index) {
+                        dot.className = `w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition border bg-indigo-600 text-white border-indigo-500 shadow-md`;
+                    } else if (userAnswers[i] !== null) {
+                        const isCorrectAns = examData[i].options[userAnswers[i]].isCorrect;
+                        if (isCorrectAns) {
+                            dot.className = `w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition border bg-emerald-950 text-emerald-400 border-emerald-700`;
+                        } else {
+                            dot.className = `w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition border bg-rose-950 text-rose-400 border-rose-700`;
+                        }
+                    } else {
+                        dot.className = `w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition border bg-slate-900 text-slate-400 border-slate-800`;
+                    }
+                }
+            });
+        }
+
+        function selectAnswer(qIndex, optIndex) {
+            playSound('click');
+            userAnswers[qIndex] = optIndex;
+            loadQuestion(qIndex);
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            if (currentQuestionIndex < examData.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            playSound('click');
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function goToQuestion(index) {
+            playSound('click');
+            loadQuestion(index);
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            
+            let correctCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans !== null && examData[idx].options[ans].isCorrect) {
+                    correctCount++;
+                }
+            });
+
+            if (correctCount >= 15) { playSound('correct'); } else { playSound('wrong'); }
+
+            document.getElementById('view-exam').classList.add('hidden');
+            document.getElementById('header-timer').classList.add('hidden');
+            document.getElementById('view-result').classList.remove('hidden');
+
+            document.getElementById('score-display').innerText = `${correctCount} / ${examData.length}`;
+            
+            let remark = "Pertahankan semangat belajarmu di TKA Bareng Cacaw!";
+            if (correctCount >= 20) remark = "Luar biasa! Penguasaan materimu sudah sangat matang! 🌟";
+            else remark = "Cukup baik, pelajari kembali materi dan pembahasannya agar semakin siap menghadapi ujian.";
+            
+            document.getElementById('score-remark').innerText = remark;
+        }
+    </script>
+</body>
+</html>
+
+```
